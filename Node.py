@@ -1,6 +1,6 @@
 #node Object
 
-class node(object):
+class Node(object):
     """
     x_ : x coordinate in the graph
     y_ : y coordinate in the graph
@@ -10,7 +10,7 @@ class node(object):
     def __init__(self,x_,y_):
         self.x = x_
         self.y = y_
-        self.edges = []
+        self.connected = []
         self.flag = False
 
     """
@@ -20,14 +20,14 @@ class node(object):
         print("x:"+str(self.x))
         print("y:"+str(self.y))
         print("edges:")
-        for edge in self.edges:
-            print("("+str(self.x)+", "+str(self.y)+")->("+ str(edge.x)+", "+str(edge.y)+")")
+        for next in self.connected:
+            print("("+str(self.x)+", "+str(self.y)+")->("+ str(next.x)+", "+str(next.y)+")")
     
 
 """
 links nodes by adding each node to each other edges
 """
 def linkNodes(node1, node2):
-    node1.edges.append(node2)
-    node2.edges.append(node1)
+    node1.connected.append(node2)
+    node2.connected.append(node1)
 
