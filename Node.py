@@ -12,6 +12,7 @@ class Node(object):
         self.y = y_
         self.connected = []
         self.flag = False
+        self.parent = None
 
     """
     prints the x and y coordinate and all the edges
@@ -23,11 +24,17 @@ class Node(object):
         for next in self.connected:
             print("("+str(self.x)+", "+str(self.y)+")->("+ str(next.x)+", "+str(next.y)+")")
     
+    def setFlag(self,val):
+        self.flag = val
 
+    def addChild(self,childNode):
+        self.connected.append(childNode)
+        childNode.parent = self
 """
 links nodes by adding each node to each other edges
 """
 def linkNodes(node1, node2):
     node1.connected.append(node2)
-    node2.connected.append(node1)
+    node2.parent = node1
+    #return node1, node2
 
