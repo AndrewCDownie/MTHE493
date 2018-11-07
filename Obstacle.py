@@ -40,7 +40,7 @@ class obstacle(object):
     def checkPassThrough(self,point1,point2):
         slopepoints=(point2[1]-point1[1])/(point2[0]-point1[0])
         b1=point2[1]-slopepoints*point2[0]
-        for i in range (1,len(self.points)):
+        for i in range (0,len(self.points)-1):
             first=self.points[i+1]
             second=self.points[i]
             slopeself=(second[1]-first[1])/(second[0]-first[0])
@@ -59,6 +59,10 @@ obj1 = obstacle([(0,0),(1,0),(1,1),(0,1)])
 
 obj1.printPoints()
 if obj1.checkInside((1.5,0.5))==True:
+    print('True')
+else:
+    print('False')
+if obj1.checkPassThrough((1.5,0.5),(0,0))==True:
     print('True')
 else:
     print('False')
