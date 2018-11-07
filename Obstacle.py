@@ -16,13 +16,13 @@ class obstacle(object):
         sortedByPolar = sorted(copy, key = polarAngle)
         lengthof=len(sortedByPolar)
         flag=0
-        secondlast=sortedByPolar[lengthof-1]
-        last=sortedByPolar[lengthof]
+        secondlast=sortedByPolar[lengthof-2]
+        last=sortedByPolar[lengthof-1]
         firstcheck=sortedByPolar[0]
         secondcheck=sortedByPolar[1]
-        if val=((last[0]-secondlast[0])*(firstcheck[1]-secondlast[1]))-((firstcheck[0]-secondlast[0])*(last[1]-secondlast[1])):
+        if 0>=((last[0]-secondlast[0])*(firstcheck[1]-secondlast[1]))-((firstcheck[0]-secondlast[0])*(last[1]-secondlast[1])):
             flag=1
-        if val=((last[0]-secondlast[0])*(sortedByPolar[1]-sortedByPolar[lengthof-1]))-((sortedByPolar[1]-sortedByPolar[lengthof-1])*(sortedByPolar[lengthof]-sortedByPolar[lengthof-1])):
+        if 0>=((firstcheck[0]-last[0])*(secondcheck[1]-last[1]))-((secondcheck[0]-last[0])*(firstcheck[1]-last[1])):
             flag=1
         for i in range(2,len(sortedByPolar)):
             first=sortedByPolar[i-2]
@@ -40,13 +40,13 @@ class obstacle(object):
     def checkPassThrough(self,point1,point2):
         slopepoints=(point2[1]-point1[1])/(point2[0]-point1[0])
         b1=point2[1]-slopepoints*point2[0]
-        for i in range (1,len(self.points))
+        for i in range (1,len(self.points)):
             first=self.points[i+1]
             second=self.points[i]
             slopeself=(second[1]-first[1])/(second[0]-first[0])
             b2=second[1]-slopeself*second[0]
             xintersect=(b1-b2)/(slopepoints-slopeself)
-            if xintersect>=first[0] and xintersect=<second[0]
+            if xintersect>=first[0] and xintersect<=second[0]:
                 return True
         return False
 
