@@ -6,20 +6,18 @@ Lachlan Devir
 Alex Taylor
 Chris Caromicoli
 
-Objs
-	Obstacle(shape, xstart, ystart )
-	Grid
-	Tree
-	Node
+To Do For Code:
+Obstacle
+	Test Check Pass Through
+	Implement Binary search algo for CheckInside
+RRT
+	Make it run longer than finding the first path to find better path
 	
-Methods
-	CreateSpace(list of objects)
-	FindPath(startPoint, endPoint) ->(path, generated Tree)
-	PlotArea(space)
-	PlotPath(listOfPoints)
-	PlotTree(plotTree)
-
-
-
-Write objects to the 
-Write RRT then adjust
+RRT*
+	Implement stucture of the code
+	
+Visualization
+	simplify code
+	make it able to update consistantly update while building the tree
+	Implment Cost Functions
+	Create the rewiring code 
