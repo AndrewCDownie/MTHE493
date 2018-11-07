@@ -1,9 +1,10 @@
 #RRT
 from Node import *
 from Obstacle import *
+#from visulization import *
 import scipy as sc
 import math
-
+import time
 root = Node(10,10)
 
 def distToPoint(node1, p):
@@ -30,7 +31,7 @@ def SampleFree():
     return (x,y)    
 
 def steer(node, point):
-    N = 10
+    N = 5
     L = math.sqrt((point[0]-node.x)**2 + (point[1]-node.y)**2)
     vect = (node.x+(N/L)*(point[0]-node.x),node.y+(N/L)*(point[1]-node.y))
     return vect
@@ -77,10 +78,11 @@ def getPathToGoal(lastNode):
 
         
 
-def RRT(root, finish):
+def RRT(root,finish,acc):
     n = 1
     newNode = root
-    while distToPoint(newNode,finish) > 10:
+    time.sleep(0.05)
+    while distToPoint(newNode,finish) > acc:
         randPoint = SampleFree()
         nearest = Nearest(root,randPoint)
         newPoint = steer(nearest,randPoint)
@@ -90,4 +92,7 @@ def RRT(root, finish):
     
     return root, getPathToGoal(newNode)
 
-
+def RRTStar(root,finish,acc):
+    newNode = root
+    while distToPoint(newNode,finish)> acc:
+        randPoint = SampleFree()
