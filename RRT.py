@@ -25,10 +25,20 @@ def Nearest(treeRoot, point):
     return nearest
 
 def SampleFree():
-    #check new xy to see if it is free
-    x = sc.random.uniform(0,500)
-    y = sc.random.uniform(0,500)
-    return (x,y)    
+    # check new xy to see if it is free
+    x = sc.random.uniform(0, 500)
+    y = sc.random.uniform(0, 500)
+    numObs = len(obstalce_list)
+
+    for num in range(0,numObs+1):
+        while obstalce_list[num].checkInside(x,y):
+             x = sc.random.uniform(0, 500)
+             y = sc.random.uniform(0, 500)
+             num = 0
+
+
+    # Make sure this isn't in an obstaclc
+    return (x,y)
 
 def steer(node, point):
     N = 5
@@ -37,6 +47,10 @@ def steer(node, point):
     return vect
 
 def obstacleFree(node,point):
+    for obs in obstalce_list:
+        if obs.checkPassThrough(node, point):
+            return False
+
     return True
 
 
@@ -78,7 +92,12 @@ def getPathToGoal(lastNode):
 
         
 
+<<<<<<< HEAD
 def RRT(root,finish,acc):
+=======
+def RRT(root, finish):
+
+>>>>>>> 448d37a730fd4e91ab11ac0d083358b1abff343a
     n = 1
     newNode = root
     time.sleep(0.05)
@@ -92,7 +111,12 @@ def RRT(root,finish,acc):
     
     return root, getPathToGoal(newNode)
 
+<<<<<<< HEAD
 def RRTStar(root,finish,acc):
     newNode = root
     while distToPoint(newNode,finish)> acc:
         randPoint = SampleFree()
+=======
+
+obstalce_list = [obstacle([(1,2),(2,2),(3,0)]),obstacle([(290,200),(300,214),(325,217)]),obstacle([(10,20),(20,20),(30,10)])]
+>>>>>>> 448d37a730fd4e91ab11ac0d083358b1abff343a
