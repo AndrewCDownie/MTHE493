@@ -92,12 +92,7 @@ def getPathToGoal(lastNode):
 
         
 
-<<<<<<< HEAD
 def RRT(root,finish,acc):
-=======
-def RRT(root, finish):
-
->>>>>>> 448d37a730fd4e91ab11ac0d083358b1abff343a
     n = 1
     newNode = root
     time.sleep(0.05)
@@ -111,12 +106,7 @@ def RRT(root, finish):
     
     return root, getPathToGoal(newNode)
 
-<<<<<<< HEAD
 def RRTStar(root,finish,acc):
     newNode = root
     while distToPoint(newNode,finish)> acc:
         randPoint = SampleFree()
-=======
-
-obstalce_list = [obstacle([(1,2),(2,2),(3,0)]),obstacle([(290,200),(300,214),(325,217)]),obstacle([(10,20),(20,20),(30,10)])]
->>>>>>> 448d37a730fd4e91ab11ac0d083358b1abff343a
