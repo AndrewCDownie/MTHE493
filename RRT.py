@@ -8,6 +8,9 @@ import time
 root = Node(10,10)
 goal = (0,0)
 
+dims = (500,500)
+
+
 def distToPoint(node1, p,p2p = False):
     if(p2p):
         #if gsetting distance between 2 points
@@ -85,14 +88,14 @@ returns a point that is not inside of an object
 
 def SampleFree():
     # check new xy to see if it is free
-    x = (sc.random.uniform(0, 500))
-    y = (sc.random.uniform(0, 500))
+    x = (sc.random.uniform(0, dims[0]))
+    y = (sc.random.uniform(0, dims[1]))
     numObs = len(obstalce_list)
 
     for obj in obstalce_list:
         while obj.checkInside((x,y)):
-            x = int(sc.random.uniform(0, 500))
-            y = int(sc.random.uniform(0, 500))
+            x = (sc.random.uniform(0, dims[0]))
+            y = (sc.random.uniform(0, dims[1]))
 
 
 
@@ -115,8 +118,8 @@ returns: point (x,y) that is end of vector from node
 def steer(node, point):
     N = 10
     L = math.sqrt((point[0]-node.x)**2 + (point[1]-node.y)**2)
-    if L<N:
-        return point
+    #if L<N:
+    #    return point
     vect = (node.x+(N/L)*(point[0]-node.x),node.y+(N/L)*(point[1]-node.y))
     return vect
 
@@ -168,10 +171,20 @@ def RRT(root,finish,acc):
     return root, getPathToGoal(newNode)
 
 
+def getGammaRRT():
+    #get Free Space Measurement
+    totalArea = dims[0]*dims[1]
+    notFreeArea = 0
+    for obj in obstalce_list:
+        notFreeArea += obj.area 
+
+
 def RRTStar(root,finish,acc):
     goal = finish
     xNewNode = root
+    cardV = 1
     eta = 10
+    gammaRRT = 1
     x = 1
     #while distToPoint(xNewNode,finish)> acc and x <1000:
     while x <11000:
@@ -184,7 +197,7 @@ def RRTStar(root,finish,acc):
             xNewNode = Node(xNew[0],xNew[1])
             ##need to add Card(V)
             cardV = 50
-            NearPoints = Near(root,xNew,min(eta,cardV))
+            NearPoints = Near(root,xNew,min(eta,gammaRRT*(((math.log(cardV))/(cardV))**(1/2))))
             xMin = xNearest 
             cMin = Cost(xNearest)+ CostOfEdge(xNearest,xNewNode)
             for xNear in NearPoints:
@@ -192,6 +205,7 @@ def RRTStar(root,finish,acc):
                     xMin = xNear
                     cMin = Cost(xNear) + CostOfEdge(xNear,xNewNode)
             xMin.addChild(xNewNode)
+            cardV +=1
             for xNear in NearPoints:
                 if collisionFree(xNear,(xNewNode.x,xNewNode.y)) and Cost(xNewNode)+ CostOfEdge(xNear,xNewNode)< Cost(xNear):
                     xParent = xNear.parent
