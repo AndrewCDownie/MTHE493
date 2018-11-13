@@ -8,6 +8,7 @@ class obstacle(object):
     #Initializes the polygon which represents the obstacle
     def __init__(self,points_):
         self.points = Polygon(points_)
+        self.rawpoints=points_
 
     #Checks to see if a given point is within an obstacle including if it is on the boundary
     #Returns true if the point is in the shape
@@ -26,9 +27,14 @@ class obstacle(object):
         return flag
 
     #Print the max bounds and min bounds for x and y in that order
-    def printPoints(self):
+    def printBounds(self):
         print(self.points.bounds)
     
     #Returns the area contained within an obstacles
     def getArea(self):
         return self.points.area
+
+    #Returns the points for the obstacle
+    def printPoints(self):
+        print(self.rawpoints)
+        return
