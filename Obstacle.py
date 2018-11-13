@@ -28,3 +28,7 @@ class obstacle(object):
     #Print the max bounds and min bounds for x and y in that order
     def printPoints(self):
         print(self.points.bounds)
+    
+    #Returns the area contained within an obstacles
+    def getArea(self):
+        return self.points.area
