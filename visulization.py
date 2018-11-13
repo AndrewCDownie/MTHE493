@@ -40,7 +40,7 @@ class visualization(object):
 
     def drawEdges(self,node):
         for next in node.connected:
-            pygame.draw.line(self.display,self.GREEN,(node.x,node.y),(next.x,next.y),1)
+            pygame.draw.line(self.display,self.GREEN,(scale*node.x,scale*node.y),(scale*next.x,scale*next.y),1)
 
     def drawTree(self,root):
         queue = [root]
@@ -52,7 +52,7 @@ class visualization(object):
 
     def drawPath(self):
         for i, node in enumerate(self.path,1):
-            pygame.draw.line(self.display,self.BLUE,(self.path[i-1].x,self.path[i-1].y),(node.x,node.y),3)
+            pygame.draw.line(self.display,self.BLUE,(scale*self.path[i-1].x,scale*self.path[i-1].y),(scale*node.x,scale*node.y),3)
 
     
 
@@ -66,15 +66,15 @@ class visualization(object):
         pygame.display.update(pygame.Rect(0, 0, 500, 500))
         #time.sleep(self.sleepTime)
 
-
+scale = 5
 running  = True
 clock = pygame.time.Clock()
-vis = visualization((500,500))
+vis = visualization((scale*100,scale*100))
 
 root = Node(0,0)
 
 accuracy = 10
-target = (400,400)
+target = (scale*400,scale*400)
 
 vis.accuracy = accuracy
 vis.target = target
