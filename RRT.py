@@ -8,7 +8,7 @@ import time
 root = Node(10,10)
 goal = (0,0)
 
-dims = (10,10)
+dims = (100,100)
 
 
 def distToPoint(node1, p,p2p = False):
@@ -72,7 +72,7 @@ def Cost(node_):
     if node.parent is None:
         return 0
     while node.parent.parent is not None:
-        cost += CostOfEdge(node,node.parent) +distToPoint(node,goal)
+        cost += CostOfEdge(node,node.parent) 
         node = node.parent
     return cost
 
@@ -118,8 +118,8 @@ returns: point (x,y) that is end of vector from node
 def steer(node, point, eta):
     N = eta
     L = math.sqrt((point[0]-node.x)**2 + (point[1]-node.y)**2)
-    #if L<N:
-    #    return point
+    if L<N:
+        return point
     vect = (node.x+(N/L)*(point[0]-node.x),node.y+(N/L)*(point[1]-node.y))
     return vect
 
@@ -163,7 +163,7 @@ def RRT(root,finish,acc):
         x+=1
         randPoint = SampleFree()
         nearest = Nearest(root,randPoint)
-        newPoint = steer(nearest,randPoint,eta)
+        newPoint = steer(nearest,randPoint,10)
         if(obstacleFree(nearest,newPoint)):
             newNode = Node(newPoint[0],newPoint[1])
             nearest.addChild(newNode)
@@ -186,21 +186,32 @@ def RRTStar(root,finish,acc):
     goal = finish
     xNewNode = root
     cardV = 1
-    eta = 5
+    eta = 2
     gammaRRT = getGammaRRT(1)
+    pathsEnds =[]
+    path = []
+    minPathNode = Node(1,1)
     x = 1
     #while distToPoint(xNewNode,finish)> acc and x <1000:
-    while x <6000:
+    while x <10000:
         x+=1
-        eta = (2**(1/2))+1
+
+        eta = (2**(1/2))
+        eta = 5
         xRand = SampleFree()
         xNearest = Nearest(root,xRand)
         xNew = steer(xNearest,xRand,eta)
         if obstacleFree(xNearest,xNew):
+        
             cMin = 0
             xNewNode = Node(xNew[0],xNew[1])
             ##need to add Card(V)
-            NearPoints = Near(root,xNew,min(eta,gammaRRT*(((math.log(cardV))/(cardV))**(1/2))))
+            
+            NearPoints = Near(root,xNew,min(eta,gammaRRT*((cardV/(2**cardV))**(1/2))))
+            print("Eta")
+            print(eta)
+            print("gamma")
+            print(gammaRRT*(((math.log(cardV))/(cardV))**(1/2)))
             xMin = xNearest 
             cMin = Cost(xNearest)+ CostOfEdge(xNearest,xNewNode)
             for xNear in NearPoints:
@@ -215,12 +226,21 @@ def RRTStar(root,finish,acc):
                     xParent = xNear.parent
                     xNewNode.addChild(xNear)
                     xParent.connected.pop(xParent.connected.index(xNear))
+            if distToPoint(xNewNode,goal)< acc:
+                print("Adding Node")
+                pathsEnds.append(xNewNode)
+    if(len(pathsEnds)>0):
+        minNode = min(pathsEnds, key = lambda x:Cost(x))
+        path = getPathToGoal(minNode)
+            
+
     print("my root")
-    print(root)                    
-    return root 
+    print(root)               
+    return root, path
         
 
 
 
-obj = obstacle([(100,100),(200,150),(200,200),(150,200)])
-obstalce_list = [obj]
+obj = obstacle([(20,20),(60,20),(60,60),(20,60)])
+obj2 = obstacle([(40,80),(80,40),(40,40)])
+obstalce_list = [obj,obj2]
