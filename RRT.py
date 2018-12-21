@@ -154,12 +154,13 @@ def RRT(root,finish,acc):
     obstacleL = []
     n = 1
     newNode = root
+    dims = (100,100)
     #time.sleep(0.05)
     #while distToPoint(newNode,finish) > acc:
     x= 0
     while x < 8000:
         x+=1
-        randPoint = SampleFree(obstacleL)
+        randPoint = SampleFree(obstacleL,dims)
         nearest = Nearest(root,randPoint)
         newPoint = steer(nearest,randPoint,10)
         if(obstacleFree(nearest,newPoint,obstacleL)):
