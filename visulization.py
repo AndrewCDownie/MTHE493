@@ -6,7 +6,7 @@ from RRT import *
 import time
 class visualization(object):
 
-    def __init__(self,size_):   
+    def __init__(self,size_,root_, target_ = (0,0),accuracy_ = 1, obstacles_ = [], scale_ = 5,):   
         #Define Colours
         self.BLACK = (  0,   0,   0)
         self.WHITE = (255, 255, 255)
@@ -16,31 +16,35 @@ class visualization(object):
 
         #setting up pygame
         pygame.init()
-        self.displaySize = size_
+        self.scale = scale_
+        #get size of the space to work with
+        self.displaySize = (self.scale*size_[0],self.scale*size_[1])
+
+        #get the proper sizing
         self.display = pygame.display.set_mode(self.displaySize)
         pygame.display.set_caption("RRT*")
+
+        #get the clock for the pygame
         self.clock = pygame.time.Clock()
+
+        #whip the screen initally
         self.display.fill(self.WHITE)
-        self.target = (0,0)
-        self.accuracy = 0
-        self.lines = []
-        self.nodes = []
-        self.obtacles = []
+
+        #the target to begin with
+        self.target = target_
+
+        #how close the tree has to get
+        self.accuracy = accuracy_
+
+        #list of obstacles
+        self.obtacles = obstacles_
+
+        #optimal path
         self.path = []
-        self.root = None
-        self.sleepTime = 0.1
+        #root of the tree
 
-    def drawLines(self,colour):
-        for line in self.lines:
-            pygame.draw.line(self.display,colour,line['start'],line['end'])
-        
-    def drawObstacles(self):
-        for elem in self.obtacles:
-            pygame.draw.polygon(self.display, self.BLACK, elem.points, 0)
-
-    def drawEdges(self,node):
-        for next in node.connected:
-            pygame.draw.line(self.display,self.GREEN,(scale*node.x,scale*node.y),(scale*next.x,scale*next.y),1)
+        self.root = root_
+       
 
     def drawTree(self,root):
         queue = [root]
@@ -49,52 +53,75 @@ class visualization(object):
             for child in node.connected:
                 queue.append(child)
             self.drawEdges(node)
+        
+    def drawEdges(self,node):
+        for next in node.connected:
+            pygame.draw.line(self.display,self.RED,(self.scale*node.x,self.scale*node.y),(self.scale*next.x,self.scale*next.y),3)
 
     def drawPath(self):
-        for i, node in enumerate(self.path,1):
-            pygame.draw.line(self.display,self.BLUE,(scale*self.path[i-1].x,scale*self.path[i-1].y),(scale*node.x,scale*node.y),3)
+        for i in range(1,len(self.path)):
+            pygame.draw.line(self.display,self.BLUE,(self.scale*self.path[i-1].x,self.scale*self.path[i-1].y),(self.scale*self.path[i].x,self.scale*self.path[i].y),7)
 
-    
+    def drawObstacles(self):
+        for elem in self.obtacles:
+            scaleedPoints = []
+            for point in elem.rawpoints:
+                scaleedPoints.append(( self.scale*point[0],self.scale*point[1]))
+            pygame.draw.polygon(self.display, self.BLACK, scaleedPoints, 0)
 
     def update(self):
+        #whip the screen
         self.display.fill(self.WHITE)
-        self.drawLines(self.BLACK)
+
+        #draw the black retangles
         self.drawObstacles()
+
+        #draw the tree created
         self.drawTree(self.root)
+
+        #draw the path of the optimal route
         self.drawPath()
-        pygame.draw.circle(self.display, self.BLACK, self.target, self.accuracy,2)
-        pygame.display.update(pygame.Rect(0, 0, 500, 500))
-        #time.sleep(self.sleepTime)
 
-scale = 5
-running  = True
-clock = pygame.time.Clock()
-vis = visualization((scale*100,scale*100))
+        #draw the goal -need to fix
+        pygame.draw.circle(self.display, self.BLACK, (self.scale*self.target[0],self.scale*self.target[1]),self.scale*self.accuracy,2)
+        #update the screen
 
-root = Node(0,0)
-
-accuracy = 10
-target = (scale*400,scale*400)
-
-vis.accuracy = accuracy
-vis.target = target
-#root,path = RRT(root,target,accuracy)
-root = RRTStar(root,target,accuracy)
+        pygame.display.update(pygame.Rect(0, 0, 10000, 10000))
 
 
-vis.path = []
-print(vis.path)
-vis.root = root
-vis.display.fill(vis.WHITE)
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-    #clock.tick(30)
 
-    #root = RRTStar(root,target,accuracy)
-    vis.update()
-    
-    #pygame.display.flip()
+if __name__ == "__main__":
+
+    scale = 5
+    running  = True
+    clock = pygame.time.Clock()
+    vis = visualization((scale*100,scale*100))
+
+    root = Node(0,0)
+
+    accuracy = 10
+    target = (100,100)
+
+    vis.accuracy = accuracy
+    vis.target = target
+    #root,path = RRT(root,target,accuracy)
+    root,path = RRTStar(root,target,accuracy)
+    vis.path =path
+
+    vis.path = []
+    print(vis.path)
+    vis.root = root
+    vis.display.fill(vis.WHITE)
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        #clock.tick(30)
+
+        #root = RRTStar(root,target,accuracy)
+        vis.update()
+        
+        #pygame.display.flip()
+        
 
 
