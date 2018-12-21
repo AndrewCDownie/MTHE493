@@ -5,10 +5,8 @@ from Obstacle import *
 import scipy as sc
 import math
 import time
-root = Node(10,10)
-goal = (0,0)
 
-dims = (100,100)
+
 
 
 def distToPoint(node1, p,p2p = False):
@@ -86,13 +84,12 @@ Samples a point in space giving a unifom distribution
 returns a point that is not inside of an object
 """
 
-def SampleFree():
+def SampleFree(obstacleL,dims):
     # check new xy to see if it is free
     x = (sc.random.uniform(0, dims[0]))
     y = (sc.random.uniform(0, dims[1]))
-    numObs = len(obstalce_list)
 
-    for obj in obstalce_list:
+    for obj in obstacleL:
         while obj.checkInside((x,y)):
             x = (sc.random.uniform(0, dims[0]))
             y = (sc.random.uniform(0, dims[1]))
@@ -102,8 +99,8 @@ def SampleFree():
     # Make sure this isn't in an obstaclc
     return (x,y)
 
-def collisionFree(node,point):
-    for obs in obstalce_list:
+def collisionFree(node,point, obstacleL):
+    for obs in obstacleL:
         if(obs.checkPassThrough((node.x,node.y),point)):
             return False
     return True
@@ -127,8 +124,8 @@ def steer(node, point, eta):
 checks if there is a obstacle between the node ane the point
 
 """
-def obstacleFree(node,point):
-    for obs in obstalce_list:
+def obstacleFree(node,point,obstacleL):
+    for obs in obstacleL:
         if obs.checkPassThrough((node.x,node.y), point):
             return False
 
@@ -154,6 +151,7 @@ def getPathToGoal(lastNode):
         
 
 def RRT(root,finish,acc):
+    obstacleL = []
     n = 1
     newNode = root
     #time.sleep(0.05)
@@ -161,28 +159,29 @@ def RRT(root,finish,acc):
     x= 0
     while x < 8000:
         x+=1
-        randPoint = SampleFree()
+        randPoint = SampleFree(obstacleL)
         nearest = Nearest(root,randPoint)
         newPoint = steer(nearest,randPoint,10)
-        if(obstacleFree(nearest,newPoint)):
+        if(obstacleFree(nearest,newPoint,obstacleL)):
             newNode = Node(newPoint[0],newPoint[1])
             nearest.addChild(newNode)
 
     return root, getPathToGoal(newNode)
 
 
-def getGammaRRT(delta):
+def getGammaRRT(delta,obstacleL,dims):
     #get Free Space Measurement
     totalArea = dims[0]*dims[1]
     notFreeArea = 0
-    for obj in obstalce_list:
+    for obj in obstacleL:
         notFreeArea += obj.getArea()
     freeArea = totalArea- notFreeArea
     gammaRRT = (math.sqrt(3)/math.sqrt(math.pi))*math.sqrt(freeArea) + delta
     return gammaRRT
 
-
+"""
 def RRTStar(root,finish,acc):
+    obstacleL = []
     goal = finish
     xNewNode = root
     cardV = 1
@@ -198,7 +197,7 @@ def RRTStar(root,finish,acc):
 
         eta = (2**(1/2))
         eta = 5
-        xRand = SampleFree()
+        xRand = SampleFree(obstacleL)
         xNearest = Nearest(root,xRand)
         xNew = steer(xNearest,xRand,eta)
         if obstacleFree(xNearest,xNew):
@@ -241,6 +240,9 @@ def RRTStar(root,finish,acc):
 
 
 
-obj = obstacle([(20,20),(60,20),(60,60),(20,60)])
-obj2 = obstacle([(40,80),(80,40),(40,40)])
-obstalce_list = [obj,obj2]
+obj1 = obstacle([(20,20),(20,40),(80,40),(80,20)])
+obj2 = obstacle([(20,20+30),(20,40+30),(80,40+30),(80,20+30)])
+obj3 = obstacle([(90,30),(90,80),(100,80),(100,30)])
+
+obstalce_list = [obj1,obj2,obj3]
+"""
