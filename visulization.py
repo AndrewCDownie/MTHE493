@@ -41,6 +41,9 @@ class visualization(object):
 
         #optimal path
         self.path = []
+
+        self.nodes = []
+
         #root of the tree
 
         self.root = root_
@@ -69,7 +72,11 @@ class visualization(object):
                 scaleedPoints.append(( self.scale*point[0],self.scale*point[1]))
             pygame.draw.polygon(self.display, self.BLACK, scaleedPoints, 0)
 
+    def drawNodes(self):
+        for n in self.nodes:
+            pygame.draw.circle(self.display, self.BLACK, (self.scale*round(n.x),self.scale*round(n.y)),2,1)
     def update(self):
+
         #whip the screen
         self.display.fill(self.WHITE)
 
@@ -82,10 +89,11 @@ class visualization(object):
         #draw the path of the optimal route
         self.drawPath()
 
+        self.drawNodes()
         #draw the goal -need to fix
         pygame.draw.circle(self.display, self.BLACK, (self.scale*self.target[0],self.scale*self.target[1]),self.scale*self.accuracy,2)
         #update the screen
-
+        
         pygame.display.update(pygame.Rect(0, 0, 10000, 10000))
 
 
@@ -95,9 +103,10 @@ if __name__ == "__main__":
     scale = 5
     running  = True
     clock = pygame.time.Clock()
-    vis = visualization((scale*100,scale*100))
-
     root = Node(0,0)
+    vis = visualization((100,100),root)
+
+    
 
     accuracy = 10
     target = (100,100)
@@ -105,8 +114,8 @@ if __name__ == "__main__":
     vis.accuracy = accuracy
     vis.target = target
     #root,path = RRT(root,target,accuracy)
-    root,path = RRTStar(root,target,accuracy)
-    vis.path =path
+    #root,path = RRTStar(root,target,accuracy)
+    #vis.path =path
 
     vis.path = []
     print(vis.path)
