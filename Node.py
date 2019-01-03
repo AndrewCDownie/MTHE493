@@ -11,15 +11,19 @@ class Node(object):
         self.x = x_
         self.y = y_
         self.connected = []
-        self.flag = False
+        self.saved = False
+        self.visited = False
+        self.open = False
+        self.closed = False
         self.parent = None
+        self.near = []
 
     """
     prints the x and y coordinate and all the edges
     """
     def printData(self):
         print("x:"+str(self.x))
-        print("y:"+str(self.y))
+        print("y:"+str(self.y)) 
         print("edges:")
         for next in self.connected:
             print("("+str(self.x)+", "+str(self.y)+")->("+ str(next.x)+", "+str(next.y)+")")
