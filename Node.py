@@ -34,6 +34,9 @@ class Node(object):
     def addChild(self,childNode):
         self.connected.append(childNode)
         childNode.parent = self
+
+    def getPoint(self):
+        return (self.x,self.y)
 """
 links nodes by adding each node to each other edges
 """

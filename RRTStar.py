@@ -2,12 +2,13 @@ import pygame
 import random
 import time
 from Node import *
-from Obstacle import *
+from Obstacle import obstacle
 from RRT import *
 from visulization import visualization
 import time
 
-
+def up():
+    vis.update()
 
 if __name__ == "__main__":
     
@@ -23,7 +24,7 @@ if __name__ == "__main__":
     cardV = 1
     eta = 2
     acc = 10
-    n = 5000
+    n = 2000
     root = Node(0,0)
     target = (115,95)
     size = (125,100)
@@ -76,9 +77,12 @@ if __name__ == "__main__":
                 minNode = min(pathsEnds, key = lambda x:Cost(x))
                 path = getPathToGoal(minNode)
                 vis.path = path
+            up()
         else:
             if not printed:
                 printed = True
                 print("time to Execute:",n,time.time() - start_time)
-            vis.update()
+            
+            
+            #vis.update()
         #pygame.display.flip()

@@ -6,7 +6,7 @@ from RRT import *
 import time
 class visualization(object):
 
-    def __init__(self,size_,root_, target_ = (0,0),accuracy_ = 1, obstacles_ = [], scale_ = 5,):   
+    def __init__(self,size_,root_, target_ = (0,0),accuracy_ = 1, obstacles_ = [], scale_ = 5,name = ""):   
         #Define Colours
         self.BLACK = (  0,   0,   0)
         self.WHITE = (255, 255, 255)
@@ -22,7 +22,7 @@ class visualization(object):
 
         #get the proper sizing
         self.display = pygame.display.set_mode(self.displaySize)
-        pygame.display.set_caption("RRT*")
+        pygame.display.set_caption(name)
 
         #get the clock for the pygame
         self.clock = pygame.time.Clock()
@@ -75,11 +75,12 @@ class visualization(object):
     def drawNodes(self):
         for n in self.nodes:
             pygame.draw.circle(self.display, self.BLACK, (self.scale*round(n.x),self.scale*round(n.y)),2,1)
+
     def update(self):
 
         #whip the screen
         self.display.fill(self.WHITE)
-
+        #print(self.obtacles)
         #draw the black retangles
         self.drawObstacles()
 

@@ -101,6 +101,10 @@ def SampleFree(obstacleL,dims):
 
 def collisionFree(node,point, obstacleL):
     for obs in obstacleL:
+        #check if point is a Node
+        if(type(point) == Node):
+            point = (point.x,point.y)
+
         if(obs.checkPassThrough((node.x,node.y),point)):
             return False
     return True

@@ -2,8 +2,9 @@ from visulization import visualization
 import pygame
 from Node import *
 from RRT import *
-
-def SampleFreeN(n):
+import time
+from state import state
+def SampleFreeN(n,obs,size):
     samples = []
     for i in range(n):
         p = SampleFree(obs,size)
@@ -16,7 +17,7 @@ def MemoNear(V,z,r_z):
     else:
         for v in V:
             if(z is v):
-                print("hit self")
+                pass
             elif distNodeToNode(z,v) < r_z :
                 z.near.append(v)
         z.saved = True
@@ -25,7 +26,7 @@ def MemoNear(V,z,r_z):
 
 def getRz():
     #to be coded
-    return 10
+    return 12
 
 
 #returns set of that is  weather it is open or closed
@@ -49,21 +50,35 @@ def setOpen(V):
         v.open = True
     return
 
-def FMT(start, end):
-    V = SampleFreeN(2000)
-    vis.nodes = V
-    root = Node(start[0],start[1])
-    vis.root = root
-    z = root
+
+"""
+To make this program run faster
+
+binary min heap needs to be implemented to hold v open
+
+cost at each node should be saved but maybe not because changing nature of the enviroment
+
+
+QUote from paper "This is because the proof of AO in Theorem 4.1 relies on the cost being additive and obeying the triangle inequality."
+
+REad Section 5.2.1 Metric Costsz
+
+
+also needs to add robustness to make sure it completes by adding more sampling
+
+"""
+
+def FMT(state,n):
+    V = SampleFreeN(n,state.obstacles,state.size)
+    state.vis.nodes = V
+    z = state.root
     V.append(z)
     z.visited = True
     z.open = True
     r_z = getRz()
     N_z = MemoNear(V,z,r_z)
     count  = 0
-    print(getOpen(V))
-
-    while(distToPoint(z,end)> acc and count < len(V)):
+    while(distToPoint(z,state.target)> state.acc):
         count +=1
         #need to write get Closed
         vOpenNew = []
@@ -71,12 +86,14 @@ def FMT(start, end):
         for x in xNear:
             N_x = MemoNear(V,x,r_z)
             yNear = getOpen(N_x)
-            print(yNear)
-            yMin = min(yNear,key = lambda y:Cost(y)+CostOfEdge(y,x))#arg min line
-            if collisionFree(yMin,x,obs):
+            yMin = min(yNear,key = lambda y:Cost(y)+CostOfEdge(y,x)) #arg min line
+            if collisionFree(yMin,x,state.obstacles):
                 yMin.addChild(x)
                 vOpenNew.append(x)
                 x.visited = True
+                state.vis.update()
+                #pygame.event.get()
+                state.CheckEvents()
         setOpen(vOpenNew)
         z.open = False
         z.closed = True
@@ -85,9 +102,8 @@ def FMT(start, end):
             print("failed")
             return 
         z = min(getOpen(V),key = lambda y:Cost(y))
-        z.printData()
         N_z = MemoNear(V,z,r_z)
-        vis.update()
+        #vis.update()
     return getPathToGoal(z)
     print("Done")
 
@@ -107,11 +123,15 @@ if __name__ == "__main__":
     root = Node(0,0)
     target = (110,50)
     acc = 5
-    vis = visualization(size,root,target_ = target,scale_= 4,accuracy_=acc,obstacles_=obs)
-    vis.path = FMT((0,0),target)
-    running = True
+    state = state(size,5,acc,root,target,obs)
+    
+    #vis = visualization(size,root,target_ = target,scale_= 4,accuracy_=acc,obstacles_ = obs)
+    state.vis.path = FMT(state,1000)
+    running = True 
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-        vis.update()
+            if event.type == pygame.MOUSEBUTTONUP:  # or MOUSEBUTTONDOWN depending on what you want.
+                print(event.pos)
+        state.vis.update()
