@@ -47,6 +47,9 @@ class visualization(object):
         #root of the tree
 
         self.root = root_
+        
+        self.robotPos = (0,0)
+        self.robotRadius = 20
        
 
     def drawTree(self,root):
@@ -76,6 +79,10 @@ class visualization(object):
         for n in self.nodes:
             pygame.draw.circle(self.display, self.BLACK, (self.scale*round(n.x),self.scale*round(n.y)),2,1)
 
+    def drawRobot(self):
+            pygame.draw.circle(self.display,self.GREEN,(round(self.scale*(self.robotPos[0])),round(self.scale*(self.robotPos[1]))),self.scale*2)
+            pygame.draw.circle(self.display,self.BLACK,(round(self.scale*(self.robotPos[0])),round(self.scale*(self.robotPos[1]))),self.scale*self.robotRadius,1)
+
     def update(self):
 
         #whip the screen
@@ -94,8 +101,10 @@ class visualization(object):
         #draw the goal -need to fix
         pygame.draw.circle(self.display, self.BLACK, (self.scale*self.target[0],self.scale*self.target[1]),self.scale*self.accuracy,2)
         #update the screen
-        
+        self.drawRobot()
+
         pygame.display.update(pygame.Rect(0, 0, 10000, 10000))
+
 
 
 
