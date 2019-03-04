@@ -42,6 +42,7 @@ class visualization(object):
         #optimal path
         self.path = []
 
+        self.curPath = []
         self.nodes = []
 
         #root of the tree
@@ -67,6 +68,10 @@ class visualization(object):
     def drawPath(self):
         for i in range(1,len(self.path)):
             pygame.draw.line(self.display,self.BLUE,(self.scale*self.path[i-1].x,self.scale*self.path[i-1].y),(self.scale*self.path[i].x,self.scale*self.path[i].y),7)
+
+    def drawCurPath(self):
+        for i in range(1,len(self.curPath)):
+            pygame.draw.line(self.display,self.GREEN,(self.scale*self.curPath[i-1].x,self.scale*self.curPath[i-1].y),(self.scale*self.curPath[i].x,self.scale*self.curPath[i].y),7)
 
     def drawObstacles(self):
         for elem in self.obtacles:
@@ -96,6 +101,8 @@ class visualization(object):
 
         #draw the path of the optimal route
         self.drawPath()
+        #draw current traversal path
+        self.drawCurPath()
 
         self.drawNodes()
         #draw the goal -need to fix

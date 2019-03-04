@@ -2,6 +2,8 @@ from Node import *
 from Obstacle import *
 from visulization import *
 import math
+import numpy as np
+from CostMesh import CostMesh
 class state(object):
 
     def __init__(self,size_,scale_,acc_,root_,target_,obstacles_,name_ = ""):
@@ -16,7 +18,8 @@ class state(object):
         self.curPath = []
         self.totalPath = []
         self.detectedPoints = []
-
+        self.costMesh = CostMesh(self.size)
+        
     def CheckEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP:  # or MOUSEBUTTONDOWN depending on what you want.
@@ -28,14 +31,23 @@ class state(object):
                 exit()
     
     def getPointCost(self,point):
+        """
         gain = 3
         var= 10
         cost = 0
         #loop through all the points and sum of costs
         for detected in self.detectedPoints:
             dist = distToPoint(point, detected, p2p = True)
-            cost +=gain*math.exp((-dist**2)/(2*var))
+            cost += gain*math.exp((-dist**2)/(2*var))
         return cost
+        """
+
+
+        return self.costMesh.getCost(point)
+
+
+
+    
     #added point to detected list 
     def addDetectedPoint(self,p):
         #check inside each obstacle
@@ -44,6 +56,7 @@ class state(object):
                 #reject the point 
                 return
         self.detectedPoints.append(p)
+        self.costMesh.addDetection(p)
 
     def dropDectections(self):
         self.detectedPoints = []
@@ -65,10 +78,13 @@ class state(object):
         return (point[0]/self.scale,point[1]/self.scale)
 
     def addPath(self,path_):
-        self.curPath = []
-        for elem in reversed(path_):
-            self.totalPath.insert(0,elem)
-            self.curPath.insert(0,elem)
-        self.vis.path = self.totalPath
+        self.totalPath = self.totalPath + path_
+        self.vis.path = self.totalPath 
+        pygame.event.get()
+        self.vis.update()
+
+    def setCurPath(self,path_):
+        self.curPath = path_
+        self.vis.curPath= self.curPath
         pygame.event.get()
         self.vis.update()
