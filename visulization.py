@@ -43,8 +43,9 @@ class visualization(object):
         self.path = []
 
         self.curPath = []
-        self.nodes = []
+        self.nodes = [] 
 
+        self.mouseLoc = (0,0)
         #root of the tree
 
         self.root = root_

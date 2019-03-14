@@ -5,9 +5,10 @@ from Obstacle import *
 import scipy as sc
 import math
 import time
+from pathPlanningUtils import *
 
 
-
+"""
 
 def distToPoint(node1, p,p2p = False):
     if(p2p):
@@ -18,13 +19,14 @@ def distToPoint(node1, p,p2p = False):
 def distNodeToNode(node1,node2):
     return math.sqrt((node1.x-node2.x)**2 + (node1.y-node2.y)**2)
 
-
+"""
 """
 Finds the near point in the tree to a given point
 Params:
 treeRoot: root of the tree to search through
 point: coordinate of point wanting to find the nearest node
 return node in tree that is closest to it
+"""
 """
 def Nearest(treeRoot, point):
     nearest = treeRoot
@@ -39,12 +41,13 @@ def Nearest(treeRoot, point):
         for child in node.connected:
             queue.append(child)
     return nearest
-
+"""
 """
 params
 TreeRoot: root of Tree
 Point: point coordinate (x,y)want that you want to find the nodes in the tree with in a radius of that point
 r: radius around the point to find nodes within
+"""
 """
 def Near(treeRoot,point,r):
     nearNodes = []
@@ -58,11 +61,12 @@ def Near(treeRoot,point,r):
     return nearNodes
 
 """
+"""
 params
 point: coordinate of point (x,y)
 returns cost of that point given a cost function
 """
-
+"""
 def Cost(node_):
     #to be implemented later
     node = node_
@@ -78,12 +82,12 @@ def CostOfEdge(node1,node2):
     #return distToPoint(node1,goal)+ distNodeToNode(node1,node2)
     return  distNodeToNode(node1,node2)
     #return distToPoint(node2,goal)
-
+"""
 """
 Samples a point in space giving a unifom distribution
 returns a point that is not inside of an object
 """
-
+"""
 def SampleFree(obstacleL,dims):
     # check new xy to see if it is free
     x = (sc.random.uniform(0, dims[0]))
@@ -109,12 +113,13 @@ def collisionFree(node,point, obstacleL):
             return False
     return True
 """
+"""
 takes sampled point and a node and creates a vector from node pointing towards the sampled point of length N
 params:
 node: node in the tree to steer from 
 point: point (x,y) to steer too
 returns: point (x,y) that is end of vector from node
-
+"""
 """
 def steer(node, point, eta):
     N = eta
@@ -124,9 +129,11 @@ def steer(node, point, eta):
     vect = (node.x+(N/L)*(point[0]-node.x),node.y+(N/L)*(point[1]-node.y))
     return vect
 
-""""
+"""
+"""
 checks if there is a obstacle between the node ane the point
 
+"""
 """
 def obstacleFree(node,point,obstacleL):
     for obs in obstacleL:
@@ -138,10 +145,12 @@ def obstacleFree(node,point,obstacleL):
 
 
 """
+"""
 gets a path from the beginning 
 param:
 lastNode: endpoint that hits goal
 returns path from start to end point
+"""
 """
 def getPathToGoal(lastNode):
     curNode = lastNode
@@ -183,7 +192,7 @@ def getGammaRRT(delta,obstacleL,dims):
     freeArea = totalArea- notFreeArea
     gammaRRT = (math.sqrt(3)/math.sqrt(math.pi))*math.sqrt(freeArea) + delta
     return gammaRRT
-
+"""
 """
 def RRTStar(root,finish,acc):
     obstacleL = []
@@ -251,3 +260,4 @@ obj3 = obstacle([(90,30),(90,80),(100,80),(100,30)])
 
 obstalce_list = [obj1,obj2,obj3]
 """
+""

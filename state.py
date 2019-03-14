@@ -1,12 +1,14 @@
 from Node import *
 from Obstacle import *
 from visulization import *
+import FMT
 import math
 import numpy as np
 from CostMesh import CostMesh
 class state(object):
 
     def __init__(self,size_,scale_,acc_,root_,target_,obstacles_,name_ = ""):
+        self.mode = "hold"
         self.root = root_
         self.size = size_
         self.scale = scale_
@@ -19,16 +21,68 @@ class state(object):
         self.totalPath = []
         self.detectedPoints = []
         self.costMesh = CostMesh(self.size)
+        self.robot = None
         
     def CheckEvents(self):
+        print("mode:"+ self.mode)
+        print(self.mode == "traversing")
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONUP:  # or MOUSEBUTTONDOWN depending on what you want.
-                print(event.pos)
-                self.clickedPoints.append(self.getScaledPoint(event.pos))
-                print(self.clickedPoints)
-                self.addDetectedPoint(self.getScaledPoint(event.pos))
             if event.type == pygame.QUIT:
                 exit()
+
+            if self.mode == "pathPlanning":
+                if event.type == pygame.MOUSEBUTTONUP:  # or MOUSEBUTTONDOWN depending on what you want.
+                    print(event.pos)
+                    self.clickedPoints.append(self.getScaledPoint(event.pos))
+                    print(self.clickedPoints)
+                    self.addDetectedPoint(self.getScaledPoint(event.pos))
+                    #if(distToPoint(event.pos,self.robot.robotPos,p2p=True)):
+
+
+            if self.mode == "traversing":
+                if event.type == pygame.MOUSEBUTTONUP: 
+                    print(distToPoint(self.getScaledPoint(event.pos),self.robot.position,p2p=True)) # or MOUSEBUTTONDOWN depending on what you want.
+                    if(distToPoint(self.getScaledPoint(event.pos),self.robot.position,p2p=True)< self.robot.radius):
+                        instantCost = self.costMesh.getMeshCopy()
+                        self.addDetectedPoint(self.getScaledPoint(event.pos))
+                        (reRoutePath,reRouteGoal) = FMT.reRoute(self,self.robot,instantCost)
+
+                        """
+                        add to where the robot is to the path set
+                        get rid of points not travelling to
+                        inject new path to curpath and go again
+                        
+                        """
+                        reRouteGoal = min(self.curPath, key = lambda x:distToPoint(x,reRouteGoal))
+                        print(self.curPath.index(reRouteGoal))
+                        print(len(self.curPath))
+                        self.curPath = self.curPath[self.curPath.index(reRouteGoal):]
+                        print(len(self.curPath))
+                        self.curPath = reRoutePath + self.curPath
+                        self.setCurPath(self.curPath)
+                        self.robot.go(self)
+                        self.addPath(self.curPath)
+                        self.setCurPath([])
+                        return False
+
+            if self.mode == "reRouting":
+                pass
+
+            if self.mode == "hold":
+                if event.type == pygame.MOUSEBUTTONUP:  # or MOUSEBUTTONDOWN depending on what you want.
+                    newRoot= Node(self.robot.position[0], self.robot.position[1])
+                    newTarget = self.getScaledPoint(event.pos)
+                    self.setNewRoot(newRoot)
+                    self.setNewTarget(newTarget)
+                    self.vis.nodes = []
+                    self.dropDectections()                   
+                    newPath = FMT.FMT_(self,1000)
+                    self.setCurPath(newPath)
+                    self.robot.go(self)
+                    self.addPath(newPath)
+                    self.setCurPath([])
+        return True
+            
     
     def getPointCost(self,point):
         """
@@ -88,3 +142,4 @@ class state(object):
         self.vis.curPath= self.curPath
         pygame.event.get()
         self.vis.update()
+
