@@ -17,6 +17,7 @@ class Node(object):
         self.closed = False
         self.parent = None
         self.near = []
+        self.cost = 0
 
     """
     prints the x and y coordinate and all the edges
@@ -28,6 +29,9 @@ class Node(object):
         for next in self.connected:
             print("("+str(self.x)+", "+str(self.y)+")->("+ str(next.x)+", "+str(next.y)+")")
     
+    def printCoordinate(self):
+        print("("+str(self.x)+ ", "+ str(self.y)+")")
+    
     def setFlag(self,val):
         self.flag = val
 
@@ -37,6 +41,10 @@ class Node(object):
 
     def getPoint(self):
         return (self.x,self.y)
+
+    def setCost(self,costToNode):
+        parentCost = self.parent.cost
+        self.cost = costToNode + parentCost
 """
 links nodes by adding each node to each other edges
 """
