@@ -33,6 +33,7 @@ class CostMesh(object):
             return 0
     
     def addDetection(self, point):
+        thresh = 50
         gain = 100
         x = int(round(point[0]))
         y = int(round(point[1]))
@@ -42,7 +43,10 @@ class CostMesh(object):
                 if self.checkBound((i,j)):
                     val = gain*gaussian.pdf((i,j))
                     if val > 0.0001:
-                        self.mesh[i,j] += val
+                        if(self.mesh[i,j] + val < thresh):
+                            self.mesh[i,j] += val
+                        else:
+                            self.mesh[i,j] = thresh
         return
     
     def decay(self):
@@ -53,41 +57,35 @@ class CostMesh(object):
         for i in range (0, self.size[0]):
             for j in range (0,self.size[1]):
                 self.mesh[i,j]=1
-        self.setUpSensitivity(obstacles[0].rawpoints[0],obstacles[0].rawpoints[1],obstacles[0].rawpoints[2],obstacles[0].rawpoints[3])
+        for k in range (0,len(obstacles)):
+            self.setUpSensitivity(obstacles[k])
         return
     
-    def setUpSensitivity(self,obst, objectul, objectur, objectlr, objectll):
+    def setUpSensitivity(self,obst):
         density=0.5
-        line1_x = np.linspace(obst.rawpoints[0][0],obst.rawpoints[1][0],density*distToPoint(obst.rawpoints[0],obst.rawpoints[1],p2p = True))
-        line1_y = np.linspace(obst.rawpoints[0][1],obst.rawpoints[1][1],density*distToPoint(obst.rawpoints[0],obst.rawpoints[1],p2p = True))
-        for i in range(len(line1_x)):
+        line1_x = np.linspace(obst.rawpoints[0][0],obst.rawpoints[1][0],int(density*distToPoint(obst.rawpoints[0],obst.rawpoints[1],p2p = True)))
+        line1_y = np.linspace(obst.rawpoints[0][1],obst.rawpoints[1][1],int(density*distToPoint(obst.rawpoints[0],obst.rawpoints[1],p2p = True)))
+        for i in range(len(line1_x)-1):
             hpoint=(line1_x[i],line1_y[i])
             self.addDetection(hpoint)
-        
-        """
-        numpointswidth=int(density*(objectur[0]-objectul[0]))
-        numpointsheight=int(density*(objectll[1]-objectul[1]))
-        print(numpointswidth)
-        print(numpointswidth)
-        print(objectur[0])
-        print(objectur[1])
-        print(objectlr[0])
-        print(objectll[1])
-        widthpoints=np.linspace(objectur[0],objectul[0],int(numpointswidth))
-        heightpoints=np.linspace(objectlr[1],objectur[1],int(numpointsheight))
-        for i in range (0,numpointsheight):
-            hpoint=(objectur[0],heightpoints[i])
+
+        line1_x = np.linspace(obst.rawpoints[1][0],obst.rawpoints[2][0],int(density*distToPoint(obst.rawpoints[1],obst.rawpoints[2],p2p = True)))
+        line1_y = np.linspace(obst.rawpoints[1][1],obst.rawpoints[2][1],int(density*distToPoint(obst.rawpoints[1],obst.rawpoints[2],p2p = True)))
+        for i in range(len(line1_x)-1):
+            hpoint=(line1_x[i],line1_y[i])
             self.addDetection(hpoint)
-        for j in range (0,numpointswidth):
-            wpoint=(widthpoints[j],objectul[0])
-            self.addDetection(wpoint)
-        for i in range (0,numpointsheight):
-            hpoint2=(objectul[0],heightpoints[i])
-            self.addDetection(hpoint2)
-        for j in range (0,numpointswidth):
-            wpoint2=(widthpoints[j],objectll[0])
-            self.addDetection(wpoint2)
-        """
+
+        line1_x = np.linspace(obst.rawpoints[2][0],obst.rawpoints[3][0],int(density*distToPoint(obst.rawpoints[2],obst.rawpoints[3],p2p = True)))
+        line1_y = np.linspace(obst.rawpoints[2][1],obst.rawpoints[3][1],int(density*distToPoint(obst.rawpoints[2],obst.rawpoints[3],p2p = True)))
+        for i in range(len(line1_x)-1):
+            hpoint=(line1_x[i],line1_y[i])
+            self.addDetection(hpoint)
+
+        line1_x = np.linspace(obst.rawpoints[3][0],obst.rawpoints[0][0],int(density*distToPoint(obst.rawpoints[3],obst.rawpoints[0],p2p = True)))
+        line1_y = np.linspace(obst.rawpoints[3][1],obst.rawpoints[0][1],int(density*distToPoint(obst.rawpoints[3],obst.rawpoints[0],p2p = True)))
+        for i in range(len(line1_x)-1):
+            hpoint=(line1_x[i],line1_y[i])
+            self.addDetection(hpoint)
         return
 
     
