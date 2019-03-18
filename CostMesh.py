@@ -31,7 +31,23 @@ class CostMesh(object):
             return self.mesh[x][y]
         else:
             return 0
-    
+
+    def addSensitivityDetection(self, point):
+        thresh = 2
+        gain = 1.5
+        x = int(round(point[0]))
+        y = int(round(point[1]))
+        gaussian = multivariate_normal([point[0],point[1]],[[10,0],[0,10]])
+        for i in range(x-50,x+50):
+            for j in range(y-50,y+50):
+                if self.checkBound((i,j)):
+                    val = gain*gaussian.pdf((i,j))
+                    if val > 0.0001:
+                        if(self.mesh[i,j] + val < thresh):
+                            self.mesh[i,j] += val
+                        else:
+                            self.mesh[i,j] = thresh
+
     def addDetection(self, point):
         thresh = 50
         gain = 100
@@ -67,25 +83,25 @@ class CostMesh(object):
         line1_y = np.linspace(obst.rawpoints[0][1],obst.rawpoints[1][1],int(density*distToPoint(obst.rawpoints[0],obst.rawpoints[1],p2p = True)))
         for i in range(len(line1_x)-1):
             hpoint=(line1_x[i],line1_y[i])
-            self.addDetection(hpoint)
+            self.addSensitivityDetection(hpoint)
 
         line1_x = np.linspace(obst.rawpoints[1][0],obst.rawpoints[2][0],int(density*distToPoint(obst.rawpoints[1],obst.rawpoints[2],p2p = True)))
         line1_y = np.linspace(obst.rawpoints[1][1],obst.rawpoints[2][1],int(density*distToPoint(obst.rawpoints[1],obst.rawpoints[2],p2p = True)))
         for i in range(len(line1_x)-1):
             hpoint=(line1_x[i],line1_y[i])
-            self.addDetection(hpoint)
+            self.addSensitivityDetection(hpoint)
 
         line1_x = np.linspace(obst.rawpoints[2][0],obst.rawpoints[3][0],int(density*distToPoint(obst.rawpoints[2],obst.rawpoints[3],p2p = True)))
         line1_y = np.linspace(obst.rawpoints[2][1],obst.rawpoints[3][1],int(density*distToPoint(obst.rawpoints[2],obst.rawpoints[3],p2p = True)))
         for i in range(len(line1_x)-1):
             hpoint=(line1_x[i],line1_y[i])
-            self.addDetection(hpoint)
+            self.addSensitivityDetection(hpoint)
 
         line1_x = np.linspace(obst.rawpoints[3][0],obst.rawpoints[0][0],int(density*distToPoint(obst.rawpoints[3],obst.rawpoints[0],p2p = True)))
         line1_y = np.linspace(obst.rawpoints[3][1],obst.rawpoints[0][1],int(density*distToPoint(obst.rawpoints[3],obst.rawpoints[0],p2p = True)))
         for i in range(len(line1_x)-1):
             hpoint=(line1_x[i],line1_y[i])
-            self.addDetection(hpoint)
+            self.addSensitivtyDetection(hpoint)
         return
 
     
