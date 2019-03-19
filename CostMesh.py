@@ -31,16 +31,20 @@ class CostMesh(object):
             return 0
     
     def addDetection(self, point):
-        gain = 100
+        thresh = 5
+        gain = 200
         x = round(point[0])
         y = round(point[1])
-        gaussian = multivariate_normal([point[0],point[1]],[[10,0],[0,10]])
-        for i in range(x-50,x+50):
-            for j in range(y-50,y+50):
+        gaussian = multivariate_normal([point[0],point[1]],[[15,0],[0,15]])
+        scalefactor = thresh/gaussian.pdf((point[0],point[1]))
+        for i in range(x-100,x+100):
+            for j in range(y-100,y+100):
                 if self.checkBound((i,j)):
-                    val = gain*gaussian.pdf((i,j))
+                    val = scalefactor*gaussian.pdf((i,j))
                     if val > 0.0001:
                         self.mesh[i,j] += val
+        plt.imshow(np.transpose(self.mesh))
+        plt.show()
         return
     
     def decay(self):
