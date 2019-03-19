@@ -150,7 +150,7 @@ def MemoNear(V,z,r_z,state):
 
 def getRz():
     #to be coded
-    return 9
+    return 15
 
 
 #returns set of that is  weather it is open or closed
