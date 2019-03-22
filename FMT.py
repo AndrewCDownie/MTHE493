@@ -77,7 +77,7 @@ def reRouteTotal(state, start, end, n):
         #relook at closed stuff
         if(VOpen.currentSize == 0):
             print("failed Total")
-            return 
+            return []
         z = VOpen.delMin()
         N_z = MemoNear(V,z,r_z,state)
         #vis.update()

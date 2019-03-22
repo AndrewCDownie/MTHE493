@@ -6,7 +6,7 @@ from RRT import *
 import time
 class visualization(object):
 
-    def __init__(self,size_,root_, target_ = (0,0),accuracy_ = 1, obstacles_ = [], scale_ = 5,name = ""):   
+    def __init__(self,size_,root_, target_ = (0,0),accuracy_ = 1, obstacles_ = [], scale_ = 7,name = ""):   
         #Define Colours
         self.BLACK = (  0,   0,   0)
         self.WHITE = (255, 255, 255)
@@ -61,6 +61,7 @@ class visualization(object):
         self.root = root_
         self.robotPos = (0,0)
         self.robotRadius = 20
+        self.i = 0
        
 
     def drawTree(self,root):
@@ -81,7 +82,7 @@ class visualization(object):
     
     def drawNoReroutePath(self):
         for i in range(1,len(self.noReroutePath)):
-            pygame.draw.line(self.display,self.PURPLE,(self.scale*self.noReroutePath[i-1].x,self.scale*self.noReroutePath[i-1].y),(self.scale*self.noReroutePath[i].x,self.scale*self.noReroutePath[i].y),7)
+            pygame.draw.line(self.display,self.BLUE,(self.scale*self.noReroutePath[i-1].x,self.scale*self.noReroutePath[i-1].y),(self.scale*self.noReroutePath[i].x,self.scale*self.noReroutePath[i].y),7)
 
     def drawCurPath(self):
         for i in range(1,len(self.curPath)):
@@ -94,7 +95,7 @@ class visualization(object):
     
     def drawTravelledPath(self):
         for i in range(1,len(self.travelledPath)):
-            pygame.draw.line(self.display,self.YELLOW,(self.scale*self.travelledPath[i-1][0],self.scale*self.travelledPath[i-1][1]),(self.scale*self.travelledPath[i][0],self.scale*self.travelledPath[i][1]),7)
+            pygame.draw.line(self.display,self.PURPLE,(self.scale*self.travelledPath[i-1][0],self.scale*self.travelledPath[i-1][1]),(self.scale*self.travelledPath[i][0],self.scale*self.travelledPath[i][1]),7)
 
 
     def drawObstacles(self):
@@ -117,32 +118,36 @@ class visualization(object):
             pygame.draw.circle(self.display, self.PURPLE, (self.scale*detection[0],self.scale*detection[1]),self.scale*4,2)
 
     def update(self):
+        if self.i > 0:
+            #whip the screen
+            self.display.fill(self.WHITE)
+            #print(self.obtacles)
+            #draw the black retangles
+            self.drawObstacles()
 
-        #whip the screen
-        self.display.fill(self.WHITE)
-        #print(self.obtacles)
-        #draw the black retangles
-        self.drawObstacles()
+            #draw the tree created
+            self.drawTree(self.root)
 
-        #draw the tree created
-        self.drawTree(self.root)
+            #draw the path of the optimal route
+            self.drawPath()
+            #draw current traversal path
+            self.drawPathToGo()
 
-        #draw the path of the optimal route
-        self.drawPath()
-        #draw current traversal path
-        self.drawPathToGo()
+            self.drawNodes()
+            self.drawNoReroutePath()
+            self.drawTravelledPath()
+            #draw the goal -need to fix
+            pygame.draw.circle(self.display, self.BLACK, (self.scale*self.target[0],self.scale*self.target[1]),self.scale*self.accuracy,2)
+            #update the screen
+            self.drawRobot()
 
-        self.drawNodes()
-        self.drawNoReroutePath()
-        self.drawTravelledPath()
-        #draw the goal -need to fix
-        pygame.draw.circle(self.display, self.BLACK, (self.scale*self.target[0],self.scale*self.target[1]),self.scale*self.accuracy,2)
-        #update the screen
-        self.drawRobot()
+            self.drawDetected()
 
-        self.drawDetected()
+            pygame.display.update(pygame.Rect(0, 0, 10000, 10000))
+            self.i = self.i  
+            return
+        self.i += 1
 
-        pygame.display.update(pygame.Rect(0, 0, 10000, 10000))
 
 
 
