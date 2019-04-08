@@ -21,11 +21,11 @@ class state(object):
         self.totalPath = []
         self.detectedPoints = []
         self.costMesh = CostMesh(self.size)
+        self.noReroutePath = []
         self.robot = None
         
     def CheckEvents(self):
-        print("mode:"+ self.mode)
-        print(self.mode == "traversing")
+        #print("mode:"+ self.mode)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
@@ -43,27 +43,35 @@ class state(object):
                 if event.type == pygame.MOUSEBUTTONUP: 
                     print(distToPoint(self.getScaledPoint(event.pos),self.robot.position,p2p=True)) # or MOUSEBUTTONDOWN depending on what you want.
                     if(distToPoint(self.getScaledPoint(event.pos),self.robot.position,p2p=True)< self.robot.radius):
+                        
+                        #Setup and ReRoute
                         instantCost = self.costMesh.getMeshCopy()
                         self.addDetectedPoint(self.getScaledPoint(event.pos))
-                        (reRoutePath,reRouteGoal) = FMT.reRoute(self,self.robot,instantCost)
+                        (reRoutePath,reRouteGoal, success) = FMT.reRoute(self,self.robot,instantCost)
 
-                        """
-                        add to where the robot is to the path set
-                        get rid of points not travelling to
-                        inject new path to curpath and go again
+                        #process rerouted Path
+                        reRouteStart = min(self.curPath, key = lambda x:distToPoint(x,self.robot.position))
+                        traversedPath = list(self.curPath[:self.curPath.index(reRouteStart)])
                         
-                        """
-                        reRouteGoal = min(self.curPath, key = lambda x:distToPoint(x,reRouteGoal))
-                        print(self.curPath.index(reRouteGoal))
-                        print(len(self.curPath))
-                        self.curPath = self.curPath[self.curPath.index(reRouteGoal):]
-                        print(len(self.curPath))
-                        self.curPath = reRoutePath + self.curPath
+
+                        #Change output based on reroute succes
+                        if(success):
+                            reRouteGoal = min(self.curPath, key = lambda x:distToPoint(x,reRouteGoal))
+                            self.curPath = self.curPath[self.curPath.index(reRouteGoal):]
+                            self.curPath = reRoutePath + self.curPath
+                        else:
+                            self.curPath = reRoutePath
+                        self.addPath(traversedPath)
                         self.setCurPath(self.curPath)
                         self.robot.go(self)
-                        self.addPath(self.curPath)
-                        self.setCurPath([])
                         return False
+            
+            if self.mode == "Schedualed":
+                if event.type == pygame.MOUSEBUTTONUP:  # or MOUSEBUTTONDOWN depending on what you want.
+                    print(event.pos)
+                    self.clickedPoints.append(self.getScaledPoint(event.pos))
+                    print(self.clickedPoints)
+
 
             if self.mode == "reRouting":
                 pass
@@ -76,10 +84,11 @@ class state(object):
                     self.setNewTarget(newTarget)
                     self.vis.nodes = []
                     self.dropDectections()                   
-                    newPath = FMT.FMT_(self,1000)
+                    newPath = FMT.FMT_(self,2000)
+                    self.noReroutePath = self.noReroutePath + newPath
                     self.setCurPath(newPath)
                     self.robot.go(self)
-                    self.addPath(newPath)
+                    self.addPath(self.curPath)
                     self.setCurPath([])
         return True
             
@@ -99,9 +108,6 @@ class state(object):
 
         return self.costMesh.getCost(point)
 
-
-
-    
     #added point to detected list 
     def addDetectedPoint(self,p):
         #check inside each obstacle
@@ -138,8 +144,12 @@ class state(object):
         self.vis.update()
 
     def setCurPath(self,path_):
+        print(path_)
         self.curPath = path_
         self.vis.curPath= self.curPath
+        self.vis.noReroutePath = self.noReroutePath
         pygame.event.get()
         self.vis.update()
+
+
 

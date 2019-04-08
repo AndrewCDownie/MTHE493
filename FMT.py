@@ -7,74 +7,6 @@ import time
 from state import state
 from pathPlanningUtils import *
 from BinHeap import BinHeap
-"""
-
-def SampleFreeN(n,obs,size):
-    samples = []
-    for i in range(n):
-        p = SampleFree(obs,size)
-        samples.append(Node(p[0],p[1]))
-    return samples
-
-def MemoNear(V,z,r_z,state):
-    if z.saved == True:
-        return z.near
-    else:
-        for v in V:
-            if(z is v):
-                pass
-            elif CostLI(z,v,state) < r_z :
-                z.near.append(v)
-        z.saved = True
-        return z.near
-
-
-def getRz():
-    #to be coded
-    return 10
-
-
-#returns set of that is  weather it is open or closed
-def getOpen(V):
-    openV = []
-    for v in V:
-        if v.open == True:
-            openV.append(v)
-    return openV
-
-#returns visited or unvisited node based on visited var
-def getVisited(V,visited = False):
-    visitedV = []
-    for v in V:
-        if v.visited == visited:
-            visitedV.append(v)
-    return visitedV
-
-def setOpen(V):
-    for v in V:
-        v.open = True
-    return
-
-#line intergral cost to replace the original on also MEMONEar need to be changed 
-def CostLI(n1,n2,state):
-    refinement = 5
-    distN2N = distNodeToNode(n1,n2)
-    #line space between each point
-    x_s = np.linspace(n1.x,n2.x,num = refinement)
-    y_s = np.linspace(n1.y,n2.y,num = refinement)
-    points = zip(x_s,y_s)
-    #summation intergral
-    value = 0
-    dx = distN2N/refinement
-    for point in points:
-        value += 1*dx + state.getPointCost(point)*dx #x+ list(points).index(point)*dx#add extra value here from state
-    return value
-
-
-    #linespace between
-
-"""
-
 
 
 """
@@ -96,11 +28,70 @@ WE NEED TO USE LINE INTERGRALS FOR COMPUTATION OF COST BETWEEN POINTS
 
 """
 
+def reRouteTotal(state, start, end, n):
+    state.mode = "TotalReroute"
+    V = SampleFreeN(n,state.obstacles,state.size)
+    state.vis.target = (int(end[0]),int(end[1]))
+    print("Total ReRoute")
+    #V = sampleRadius(40,(0,0),state)
+    VOpen = BinHeap()
+    state.vis.nodes = V
+    z = Node(start[0],start[1])
+    state.root = z
+    state.vis.root = state.root
+    V.append(z)
+    z.visited = True
+    VOpen.insert(z)
+    r_z = getRz()
+    N_z = MemoNear(V,z,r_z,state)
+    count  = 0
+    while(distToPoint(z,end) > state.acc):
+        count +=1
+        #need to write get Closed
+        vOpenNew = []
+        xNear = getVisited(N_z,visited=False)
+        for x in xNear:
+
+            N_x = MemoNear(V,x,r_z,state)
+            yNear = getOpen(VOpen,N_x)
+            #yMin = min(yNear,key = lambda y:Cost(y)+CostOfEdge(y,x)) #arg min line
+
+            #add check for empty to break
+            if(len(yNear) == 0):
+                break
+                
+            yMin = min(yNear,key = lambda y:y.cost+CostLI(y,x,state)) #arg min line#need to change this
+
+            if collisionFree(yMin,x,state.obstacles):
+                yMin.addChild(x)
+                x.setCost(CostLI(yMin,x,state));
+                # update cost here 
+                vOpenNew.append(x)
+                x.visited = True
+                state.vis.update()
+                #pygame.event.get()
+                state.CheckEvents()
+        setOpen(VOpen,vOpenNew)
+        z.open = False
+        z.closed = True
+        #relook at closed stuff
+        if(VOpen.currentSize == 0):
+            print("failed Total")
+            return []
+        z = VOpen.delMin()
+        N_z = MemoNear(V,z,r_z,state)
+        #vis.update()
+    #state.mode = "hold"
+    return getPathToGoal(z)
+
+
+
+
 def reRoute(state,robot,instantMesh):
     #find the closest node with cheepest cost
     state.mode = "reRouting"
-    print("REROUTE MODE")
     goalPoint = robot.pathToGo[-1]
+    successful = True
     #finding the best node to traverse to
     for point in robot.pathToGo:
         print(instantMesh.getCost(point))
@@ -154,12 +145,13 @@ def reRoute(state,robot,instantMesh):
         #relook at closed stuff
         if(VOpen.currentSize == 0):
             print("failed")
-            return 
+            totalReroute = reRouteTotal(state,(robot.position[0],robot.position[1]),state.target,1500)
+            return(totalReroute,state.target,False)
         z = VOpen.delMin()
         N_z = MemoNear(V,z,r_z,state)
         #vis.update()
     state.mode = "hold"
-    return (getPathToGoal(z),goalPoint)
+    return (getPathToGoal(z),goalPoint,True)
 
 
 
@@ -214,7 +206,6 @@ def FMT_(state,n):
         #vis.update()
     state.mode = "hold"
     return getPathToGoal(z)
-    print("Done")
 
 
     
