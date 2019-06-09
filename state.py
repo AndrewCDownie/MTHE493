@@ -21,6 +21,7 @@ class state(object):
         self.totalPath = []
         self.detectedPoints = []
         self.costMesh = CostMesh(self.size)
+        self.costMesh.initSensitivity(self.obstacles)
         self.noReroutePath = []
         self.robot = None
         

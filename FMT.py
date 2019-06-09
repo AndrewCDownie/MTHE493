@@ -28,7 +28,7 @@ WE NEED TO USE LINE INTERGRALS FOR COMPUTATION OF COST BETWEEN POINTS
 
 """
 
-def reRouteTotal(state, start, end, n):
+def reRouteTotal(state, start, end, n, rz = 15):
     state.mode = "TotalReroute"
     V = SampleFreeN(n,state.obstacles,state.size)
     state.vis.target = (int(end[0]),int(end[1]))
@@ -42,7 +42,7 @@ def reRouteTotal(state, start, end, n):
     V.append(z)
     z.visited = True
     VOpen.insert(z)
-    r_z = getRz()
+    r_z = rz
     N_z = MemoNear(V,z,r_z,state)
     count  = 0
     while(distToPoint(z,end) > state.acc):
@@ -145,7 +145,7 @@ def reRoute(state,robot,instantMesh):
         #relook at closed stuff
         if(VOpen.currentSize == 0):
             print("failed")
-            totalReroute = reRouteTotal(state,(robot.position[0],robot.position[1]),state.target,1500)
+            totalReroute = reRouteTotal(state,(robot.position[0],robot.position[1]),state.target,1500, rz = 20)
             return(totalReroute,state.target,False)
         z = VOpen.delMin()
         N_z = MemoNear(V,z,r_z,state)

@@ -38,8 +38,8 @@ class robot(object):
         for i in range(1, len(path)):
             p1 = path[i-1].getPoint()
             p2 = path[i].getPoint()
-            x_s = np.linspace(p1[0],p2[0],num = 5)
-            y_s = np.linspace(p1[1],p2[1],num = 5)
+            x_s = np.linspace(p1[0],p2[0],num = 3)
+            y_s = np.linspace(p1[1],p2[1],num = 3)
             interSec = zip(x_s,y_s)
             for elem in interSec:
                 self.pathToGo.append(elem)
@@ -84,9 +84,6 @@ class robot(object):
                     self.pathToGo = []
                     self.preparePath(reRoutePath) 
                 state.vis.pathToGo = list(self.pathToGo)
-
-
-                    
         return travelledPath, detectedNum 
 
         
@@ -126,11 +123,11 @@ if __name__ == "__main__":
     size = (150,100)
     root = Node(0,0)
     target = (40,5)
-    acc = 3
+    acc = 3 
     state = state(size,5,acc,root,target,obs,name_ = "Path Planning Simulation")
     state.setRobot(robot(state.root.getPoint()))
 
-    destinationQueue =[(70.0, 5.0),(76.8, 38),
+    destinationQueue =[(90.0, 5.0),(76.8, 38),
     (76.2, 52.8), 
     (115.2, 23.0),
     (27.0, 22.0),
@@ -157,6 +154,7 @@ if __name__ == "__main__":
     [(50,65),(48,20),(50,40)],
     [(10,10),(50,20),(52,54)]]
     
+    d = 0
 
 
     state.robot.preDetections = detectionSets.pop(0)
@@ -179,12 +177,13 @@ if __name__ == "__main__":
     print(measurePathLength(travelledPath))
     travelled.append(travelledPathLength)
     planned.append(plannedPathLength)
-    state.costMesh.decay(0.7)
+    state.costMesh.decay(d)
     state.mode = "Schedualed"
     running = True 
     
     while running:
         state.mode = "Schedualed"
+        destinationQueue = []
         if len(destinationQueue)>0 and len(detectionSets)>0:
             nextDest = destinationQueue.pop(0)
             state.target = nextDest
@@ -192,7 +191,9 @@ if __name__ == "__main__":
             path = []
             i = 0
             while len(path)==0:
-                path = reRouteTotal(state,state.robot.position,nextDest,1500+i)
+                j =0
+                path = reRouteTotal(state,state.robot.position,nextDest,1500+i,rz = 15 + j)
+                j +=5
                 i+=100
             state.setCurPath(path)
             state.vis.root = Node(0,0)
@@ -214,7 +215,7 @@ if __name__ == "__main__":
             print(planned)
             print(travelled)
             print(encoutered)
-            state.costMesh.decay(0.7)
+            state.costMesh.decay(d)
             """
             plt.plot(travelled)
             plt.plot(planned)

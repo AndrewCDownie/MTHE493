@@ -206,11 +206,24 @@ def CostLI(n1,n2,state):
 def sampleRadius(r,point,state):
     #Sample based on density
     samples = []
-    while(len(samples)<=100):
+
+    while(len(samples)<=10*r):
         sample = SampleFree(state.obstacles,state.size)
         if distToPoint(point,sample, p2p=True) < r:
             samples.append(Node(sample[0],sample[1]))
     return samples
-        
+
+
+def measurePathLength(path):
+    totalDist = 0
+    for i in range(1,len(path)):
+        totalDist += distToPoint(path[i-1],path[i],p2p=True)
+    return totalDist
+
+def measureNodePathLength(path):
+    totalDist = 0
+    for i in range(1,len(path)):
+        totalDist += distNodeToNode(path[i-1],path[i])
+    return totalDist
 
 
