@@ -1,9 +1,9 @@
-# This is the Repository for MTHE493 Project
+# MTHE493 Project: Motion Planning in Stochastic Environments
 
 ## This group consist of:
-Andrew Downie
-Lachlan Devir 
-Alex Taylor
+Andrew Downie, 
+Lachlan Devir, 
+Alex Taylor, and
 Chris Caromicoli
 ## Description
 This is the Capstone Project for MTHE493. The project is an experimental Motion Planner for Stochastic Enviroments. The planner utilizes a Fast Marching Trees Algorithm with a cost-function dictated by a markov model of the enviroment to reroute a robot around unforseen obstacles and avoid them in the future.
