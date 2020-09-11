@@ -10,8 +10,10 @@ This is the Capstone Project for MTHE493. The project is an experimental Motion 
 
 Include Image Here
 
+![Here is a video of the Algorithm in action](demo/demo.gif)
 
-Include Video
+The robot in the upper left is naviagting towards the black circles and during the traversal it can encounter unforseen obstacles and must reroute around them. After this the Robots planner updates its model of the enviroment and will later optimize later paths to avoid areas with large numbers of unforseen obstacles.
 
+The following flow diagram outlines the planners two-stage system that is used to navigate in stochasitc environments.
 
-
+![Diagram](demo/diagram.png)
